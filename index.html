@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecretChat - Chat Anonim Real-time</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6d28d9;
+            --secondary-color: #8b5cf6;
+            --accent-color: #a78bfa;
+            --light-color: #faf5ff;
+            --dark-color: #4c1d95;
+            --text-color: #1f2937;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--dark-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-color);
+        }
+
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Link Section */
+        .link-section {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: var(--light-color);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .link-display {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .link-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .copy-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        /* Chat Room */
+        .chat-room {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            height: 600px;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            max-width: 80%;
+            position: relative;
+        }
+
+        .message.sent {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message-content {
+            display: inline-block;
+            padding: 0.75rem 1rem;
+            border-radius: 18px;
+            background: white;
+            box-shadow: var(--shadow);
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message.sent .message-content {
+            background: var(--primary-color);
+            color: white;
+            border-bottom-right-radius: 6px;
+        }
+
+        .message.received .message-content {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-bottom-left-radius: 6px;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .message.sent .message-time {
+            justify-content: flex-end;
+        }
+
+        .message-status {
+            font-size: 0.7rem;
+            margin-left: 0.25rem;
+        }
+
+        .status-sent {
+            color: #93c5fd;
+        }
+
+        .status-delivered {
+            color: #60a5fa;
+        }
+
+        .status-read {
+            color: #10b981;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 0.5rem 1rem;
+            color: #6b7280;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 25px;
+            outline: none;
+        }
+
+        .chat-input input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .send-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .send-btn:hover {
+            background: var(--dark-color);
+            transform: scale(1.05);
+        }
+
+        .send-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Participant Info */
+        .participant-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .participant-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #6b7280;
+        }
+
+        .participant-dot.active {
+            background: #10b981;
+        }
+
+        /* Connection Status */
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .connection-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
+
+        .connection-dot.connected {
+            background: #10b981;
+        }
+
+        /* Chat Controls */
+        .chat-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Room Info */
+        .room-info {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .room-info p {
+            margin: 0.25rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-radius: 8px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0.5rem;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        /* Share Buttons */
+        .share-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .share-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        /* System Message */
+        .message.system {
+            text-align: center;
+            max-width: 100%;
+            margin: 0.5rem 0;
+        }
+
+        .message.system .message-content {
+            background: #f3f4f6;
+            color: #6b7280;
+            font-style: italic;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-user-secret"></i> SecretChat</h1>
+            <p>Chat anonim real-time dengan orang lain melalui link khusus</p>
+        </header>
+
+        <!-- Alert Messages -->
+        <div id="alert" class="alert"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Create Chat Room -->
+            <div class="card">
+                <h2><i class="fas fa-plus-circle"></i> Buat Chat Rahasia</h2>
+                <p>Buat room chat baru dan bagikan linknya kepada seseorang</p>
+                
+                <div class="form-group">
+                    <label for="roomName">Nama Room</label>
+                    <input type="text" id="roomName" class="form-control" placeholder="Misal: Chat dengan Seseorang" value="Chat Rahasia">
+                </div>
+
+                <div class="form-group">
+                    <label for="initialMessage">Pesan Pertama (Opsional)</label>
+                    <textarea id="initialMessage" class="form-control" placeholder="Tulis pesan pertama yang ingin kamu sampaikan..."></textarea>
+                </div>
+
+                <button id="createRoomBtn" class="btn btn-primary btn-block">
+                    <i class="fas fa-key"></i> Buat Room Chat
+                </button>
+
+                <div id="roomLinkSection" class="link-section" style="display: none;">
+                    <h3>Link Chat Rahasia Anda:</h3>
+                    <div class="link-display">
+                        <input type="text" id="roomLink" class="link-input" readonly>
+                        <button id="copyLinkBtn" class="copy-btn">
+                            <i class="far fa-copy"></i> Salin
+                        </button>
+                    </div>
+                    
+                    <div class="share-buttons">
+                        <button class="share-btn" onclick="shareViaWhatsApp()">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </button>
+                        <button class="share-btn" onclick="shareViaTelegram()">
+                            <i class="fab fa-telegram"></i> Telegram
+                        </button>
+                        <button class="share-btn" onclick="shareViaSMS()">
+                            <i class="fas fa-sms"></i> SMS
+                        </button>
+                    </div>
+
+                    <div class="room-info">
+                        <p><i class="fas fa-users"></i> <span id="roomParticipantCount">0</span> orang terhubung</p>
+                        <p><i class="fas fa-clock"></i> Room aktif: <span id="roomDuration">0 menit</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Join Chat Room -->
+            <div class="card">
+                <h2><i class="fas fa-door-open"></i> Join Chat Rahasia</h2>
+                <p>Masuk ke room chat dengan link yang diberikan</p>
+                
+                <div class="form-group">
+                    <label for="joinLink">Link Chat</label>
+                    <input type="text" id="joinLink" class="form-control" placeholder="Tempel link chat di sini...">
+                </div>
+
+                <button id="joinRoomBtn" class="btn btn-secondary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Masuk ke Chat
+                </button>
+
+                <div class="quick-stats">
+                    <h4><i class="fas fa-chart-bar"></i> Statistik Hari Ini</h4>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number" id="totalRooms">128</div>
+                            <div class="stat-label">Room Dibuat</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="activeChats">42</div>
+                            <div class="stat-label">Chat Aktif</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Room -->
+        <div id="chatRoom" class="chat-room">
+            <div class="chat-header">
+                <div>
+                    <h3 id="chatRoomTitle">Chat Rahasia</h3>
+                    <div class="participant-info">
+                        <span class="participant-dot" id="partnerStatus"></span>
+                        <span id="participantCount">Menunggu partner...</span>
+                    </div>
+                    <div class="connection-status">
+                        <span class="connection-dot" id="connectionStatus"></span>
+                        <span id="connectionText">Menghubungkan...</span>
+                    </div>
+                    <div class="online-status">
+                        <span id="typingIndicator" class="typing-indicator"></span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="control-btn" onclick="clearChat()" title="Bersihkan Chat">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="control-btn" onclick="exportChat()" title="Export Chat">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button id="leaveChatBtn" class="btn btn-secondary">
+                        <i class="fas fa-sign-out-alt"></i> Keluar
+                    </button>
+                </div>
+            </div>
+            
+            <div id="chatMessages" class="chat-messages">
+                <!-- Messages will appear here -->
+            </div>
+            
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="Ketik pesan rahasia..." disabled>
+                <button id="sendMessageBtn" class="send-btn" disabled>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

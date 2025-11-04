@@ -1,0 +1,12 @@
+{
+  "name": "secretchat",
+  "version": "1.0.0",
+  "description": "Anonymous chat via link - Serverless Version",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "uuid": "^9.0.0"
+  }
+}
