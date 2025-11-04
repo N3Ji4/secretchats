@@ -2,11 +2,18 @@
   "version": 2,
   "builds": [
     {
+      "src": "api/socket-handler.js",
+      "use": "@vercel/node",
+      "config": {
+        "maxDuration": 30
+      }
+    },
+    {
       "src": "api/**/*.js",
       "use": "@vercel/node"
     },
     {
-      "src": "public/**/*",
+      "src": "public/**/*", 
       "use": "@vercel/static"
     }
   ],
@@ -23,10 +30,5 @@
       "src": "/(.*)",
       "dest": "/public/$1"
     }
-  ],
-  "functions": {
-    "api/socket-handler.js": {
-      "maxDuration": 30
-    }
-  }
+  ]
 }
